@@ -16,8 +16,9 @@ const Login = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login attempted:", { email, password, rememberMe });
+    // Mock login - in real app, this would call your auth API
+    localStorage.setItem("isAuthenticated", "true");
+    window.location.href = "/dashboard/upload";
   };
 
   return (

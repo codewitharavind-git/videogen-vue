@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import { Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Upload from "./pages/dashboard/Upload";
@@ -12,6 +12,15 @@ import Results from "./pages/dashboard/Results";
 import Settings from "./pages/dashboard/Settings";
 import NotFound from "./pages/NotFound";
 import { DashboardLayout } from "./components/layout/DashboardLayout";
+
+// Mock authentication - in real app, this would come from context/store
+const isAuthenticated = () => {
+  return localStorage.getItem("isAuthenticated") === "true";
+};
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  return isAuthenticated() ? <>{children}</> : <Navigate to="/login" replace />;
+};
 
 const queryClient = new QueryClient();
 
@@ -22,30 +31,38 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           
-          {/* Dashboard Routes */}
+          {/* Protected Dashboard Routes */}
           <Route path="/dashboard/upload" element={
-            <DashboardLayout>
-              <Upload />
-            </DashboardLayout>
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Upload />
+              </DashboardLayout>
+            </ProtectedRoute>
           } />
           <Route path="/dashboard/status" element={
-            <DashboardLayout>
-              <Status />
-            </DashboardLayout>
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Status />
+              </DashboardLayout>
+            </ProtectedRoute>
           } />
           <Route path="/dashboard/results" element={
-            <DashboardLayout>
-              <Results />
-            </DashboardLayout>
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Results />
+              </DashboardLayout>
+            </ProtectedRoute>
           } />
           <Route path="/dashboard/settings" element={
-            <DashboardLayout>
-              <Settings />
-            </DashboardLayout>
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Settings />
+              </DashboardLayout>
+            </ProtectedRoute>
           } />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
